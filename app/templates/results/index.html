@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Results{% endblock %}
+{% block content %}
+<h1>Election results</h1>
+<div class="card">
+  {% if elections %}
+  <ul class="list">
+    {% for e in elections %}
+    <li><div><strong>{{ e.title }}</strong><div class="muted small">Closed {{ e.closes_at|localdt }}</div></div>
+    <a class="btn secondary" href="{{ url_for('results.election', eid=e.id) }}">View results</a></li>
+    {% endfor %}
+  </ul>
+  {% else %}<p class="muted">No results have been published yet.</p>{% endif %}
+</div>
+<p>Voted already? <a href="{{ url_for('results.verify') }}">Check your receipt</a>.</p>
+{% endblock %}

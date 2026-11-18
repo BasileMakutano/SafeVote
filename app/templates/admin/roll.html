@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "_forms.html" import csrf, area %}
+{% block title %}Voter roll{% endblock %}
+{% block content %}
+<div class="stats">
+  <div class="stat"><b>{{ counts.total }}</b>students on the roll</div>
+  <div class="stat"><b>{{ counts.claimed }}</b>have registered</div>
+</div>
+<div class="card wide">
+  <h2>Add students to the roll</h2>
+  <p class="muted">One student per line: student ID, then full name. Existing IDs are left unchanged.</p>
+  {% if errors %}<div class="flash error" role="alert">{% for e in errors %}<div>{{ e }}</div>{% endfor %}</div>{% endif %}
+  <form method="post">
+    {{ csrf() }}
+    {{ area("roll", "Roll data", required=true, rows=8, placeholder="123456,Amani Njoroge") }}
+    <button class="btn" type="submit">Add to roll</button>
+  </form>
+</div>
+{% endblock %}

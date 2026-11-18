@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% from "_forms.html" import csrf, field %}
+{% block title %}Check a receipt{% endblock %}
+{% block content %}
+<div class="card narrow wide">
+  <h1>Check your receipt</h1>
+  <p class="muted">Enter the receipt code you were given when you voted. Receipts can be checked once an election's results are published.</p>
+  <form method="post">
+    {{ csrf() }}
+    {{ field("receipt", "Receipt code", required=true, minlength=24, maxlength=40, pattern="[A-Fa-f0-9 \\-]{24,40}", title="The 24 character code from your receipt", autocomplete="off", spellcheck="false", placeholder="XXXX-XXXX-XXXX-XXXX-XXXX-XXXX") }}
+    <button class="btn" type="submit">Check receipt</button>
+  </form>
+</div>
+{% if result %}
+<div class="card narrow wide">
+  <h2 class="check flush">Your ballot was counted</h2>
+  <p><strong>{{ result.title }}</strong><br>Counted for <strong>{{ result.candidate }}</strong>.</p>
+  <p class="muted small">It is entry {{ result.position }} of {{ result.total }} in the published ballot list.</p>
+  <p class="muted small">Anyone who sees your receipt code can see this result, so share it only if you want to.</p>
+</div>
+{% elif searched %}
+<div class="card narrow wide">
+  <h2>No match found</h2>
+  <p>No published ballot matches that code. Check for typos. If the election's results are not published yet, try again later.</p>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Elections{% endblock %}
+{% block content %}
+<div class="stats">
+  <div class="stat"><b>{{ stats.roll }}</b>students on the roll</div>
+  <div class="stat"><b>{{ stats.registered }}</b>registered voters</div>
+  <div class="stat"><b>{{ elections|length }}</b>elections</div>
+</div>
+<div class="card">
+  <div class="actions between"><h2 class="flush">Elections</h2><a class="btn" href="{{ url_for('admin.new_election') }}">New election</a></div>
+  {% if elections %}
+  <ul class="list">
+    {% for e in elections %}
+    <li>
+      <div><strong>{{ e.title }}</strong> <span class="badge {{ e.state }}">{{ e.state }}</span>{% if e.results_published %} <span class="badge">results published</span>{% endif %}
+        <div class="muted small">{{ e.opens_at|localdt }} to {{ e.closes_at|localdt }}</div></div>
+      <a class="btn secondary" href="{{ url_for('admin.election', eid=e.id) }}">Manage</a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}<p class="muted mt">No elections yet. Upload the voter roll, then create your first election.</p>{% endif %}
+</div>
+{% endblock %}

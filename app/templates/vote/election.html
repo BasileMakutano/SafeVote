@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% from "_forms.html" import csrf %}
+{% block title %}{{ e.title }}{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>{{ e.title }}</h1>
+  <p><span class="badge {{ state }}">{{ state }}</span> <span class="muted small">{{ e.opens_at|localdt }} to {{ e.closes_at|localdt }}</span></p>
+  {% if e.description %}<p>{{ e.description }}</p>{% endif %}
+</div>
+
+{% if state == "open" and not voted %}
+<form class="card" method="post" action="{{ url_for('vote.review', eid=e.id) }}">
+  {{ csrf() }}
+  <h2>Choose one candidate</h2>
+  <fieldset class="ballot">
+    <legend class="muted small legend">Your vote is final once cast.</legend>
+    {% for c in candidates %}
+    <label class="choice">
+      <input type="radio" name="candidate_id" value="{{ c.id }}" required>
+      <span><strong>{{ c.name }}</strong>{% if c.manifesto %}<span class="muted">{{ c.manifesto }}</span>{% endif %}</span>
+    </label>
+    {% endfor %}
+  </fieldset>
+  <button class="btn" type="submit">Review my choice</button>
+</form>
+{% elif voted %}
+<div class="card"><h2>Your ballot is recorded</h2><p>You have already voted in this election. Keep the receipt code you were shown. After results are published you can check it at <a href="{{ url_for('results.verify') }}">the results site</a>.</p></div>
+{% elif state == "upcoming" %}
+<div class="card"><h2>Voting has not opened</h2><p>Voting opens {{ e.opens_at|localdt }}.</p></div>
+{% else %}
+<div class="card"><h2>Voting has closed</h2>
+  {% if published %}<p><a class="btn" href="{{ url_for('results.election', eid=e.id) }}">See the results</a></p>
+  {% else %}<p>Results will appear on the results site once the election office publishes them.</p>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

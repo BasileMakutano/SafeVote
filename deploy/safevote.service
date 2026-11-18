@@ -1,0 +1,20 @@
+# /etc/systemd/system/safevote.service
+[Unit]
+Description=SafeVote (gunicorn)
+After=network.target
+
+[Service]
+User=safevote
+Group=safevote
+WorkingDirectory=/opt/safevote
+EnvironmentFile=/opt/safevote/.env
+ExecStart=/opt/safevote/.venv/bin/gunicorn --workers 3 --bind 127.0.0.1:8000 --access-logfile - wsgi:app
+Restart=on-failure
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/safevote/instance
+
+[Install]
+WantedBy=multi-user.target

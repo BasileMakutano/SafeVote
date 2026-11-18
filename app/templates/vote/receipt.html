@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Vote recorded{% endblock %}
+{% block content %}
+<div class="card narrow">
+  <h1>Your vote is recorded</h1>
+  <p>{{ e.title }}</p>
+  <div class="ticket">
+    <div class="muted small">Your receipt code</div>
+    <div class="code">{{ receipt }}</div>
+    <div class="muted small">Shown once</div>
+  </div>
+  <p>Write this code down or take a screenshot. It is not linked to your name, so nobody can recover it for you.</p>
+  <p>When the election office publishes results, enter it at <a href="{{ url_for('results.verify') }}">the results site</a> to confirm your ballot was counted.</p>
+  <a class="btn secondary" href="{{ url_for('vote.index') }}">Back to elections</a>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Elections{% endblock %}
+{% block content %}
+<h1>Hello, {{ current_user.full_name.split(' ')[0] }}</h1>
+<div class="card">
+  <h2>Elections</h2>
+  {% if elections %}
+  <ul class="list">
+    {% for e in elections %}
+    <li>
+      <div>
+        <strong>{{ e.title }}</strong> <span class="badge {{ e.state }}">{{ e.state }}</span>
+        {% if e.voted %}<span class="badge">You voted</span>{% endif %}
+        <div class="muted small">Voting {{ 'closed' if e.state == 'closed' else 'closes' }} {{ e.closes_at|localdt }}</div>
+      </div>
+      <a class="btn {{ '' if e.state == 'open' and not e.voted else 'secondary' }}" href="{{ url_for('vote.election', eid=e.id) }}">{{ 'Vote now' if e.state == 'open' and not e.voted else 'View' }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="muted">No elections are running yet. Check back when the election office announces one.</p>
+  {% endif %}
+</div>
+{% endblock %}

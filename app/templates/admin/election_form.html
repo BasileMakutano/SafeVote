@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% from "_forms.html" import csrf, field, area %}
+{% block title %}New election{% endblock %}
+{% block content %}
+<div class="card narrow wide">
+  <h1>New election</h1>
+  <form method="post">
+    {{ csrf() }}
+    {{ field("title", "Title", value=form.get("title", ""), error=errors.get("title"), required=true, minlength=3, maxlength=120) }}
+    {{ area("description", "Description", value=form.get("description", ""), error=errors.get("description"), hint="Optional. Up to 1000 characters.", maxlength=1000) }}
+    {{ field("opens_at", "Opens", type="datetime-local", value=form.get("opens_at", ""), error=errors.get("opens_at"), required=true) }}
+    {{ field("closes_at", "Closes", type="datetime-local", value=form.get("closes_at", ""), error=errors.get("closes_at"), required=true, hint="Times are in the election timezone.") }}
+    <button class="btn" type="submit">Create election</button>
+  </form>
+</div>
+{% endblock %}

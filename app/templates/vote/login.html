@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% from "_forms.html" import csrf, field %}
+{% block title %}Sign in{% endblock %}
+{% block content %}
+<div class="card narrow">
+  <h1>Sign in to vote</h1>
+  <form method="post" novalidate>
+    {{ csrf() }}
+    {{ field("email", "Email", type="email", value=form.get("email", ""), required=true, maxlength=254, autocomplete="email") }}
+    {{ field("password", "Password", type="password", required=true, maxlength=128, autocomplete="current-password") }}
+    <button class="btn" type="submit">Sign in</button>
+  </form>
+  <p class="muted small mt">New here? <a href="{{ url_for('vote.register') }}">Register with your student ID</a>.</p>
+</div>
+{% endblock %}

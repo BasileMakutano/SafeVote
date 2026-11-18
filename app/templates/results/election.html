@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ e.title }} results{% endblock %}
+{% block content %}
+<h1>{{ e.title }}</h1>
+<p class="muted">Voting closed {{ e.closes_at|localdt }}. {{ total }} ballot{{ '' if total == 1 else 's' }} counted.</p>
+
+<div class="card">
+  <h2>Result</h2>
+  <div class="tally">
+    {% for r in rows %}
+    <div class="row">
+      <div class="head"><span>{{ r.name }}</span><span>{{ r.votes }} ({{ ((r.votes * 100 / total) | round(1)) if total else 0 }}%)</span></div>
+      <progress max="{{ total or 1 }}" value="{{ r.votes }}" aria-label="{{ r.name }}"></progress>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="card">
+  <h2>Integrity checks</h2>
+  <p class="{{ 'check' if report.counts_match else 'check bad' }}">Ballots stored ({{ report.ballots }}) {{ 'match' if report.counts_match else 'do not match' }} the number of voters marked as having voted ({{ report.voters }}).</p>
+  <p class="{{ 'check' if report.digest_ok else 'check bad' }}">The ballot list {{ 'still matches' if report.digest_ok else 'no longer matches' }} the fingerprint recorded when results were published.</p>
+  <p class="muted small">Turnout: {{ report.voters }} of {{ report.registered }} registered voters.</p>
+  <p class="small">Fingerprint (SHA-256):</p>
+  <p class="mono">{{ report.digest }}</p>
+  <p class="small muted">To check it yourself, download the ballot list and run <span class="mono">tail -n +2 election-{{ e.id }}-ballots.csv | sha256sum</span>. The output should equal the fingerprint above.</p>
+  <a class="btn secondary" href="{{ url_for('results.ballots_csv', eid=e.id) }}">Download ballot list (CSV)</a>
+</div>
+
+<div class="card">
+  <h2>Published ballots</h2>
+  <p class="muted">Each row is a receipt fingerprint and the candidate it counted for, sorted so that order reveals nothing about who voted when. {% if board_size > board|length %}Showing the first {{ board|length }} of {{ board_size }}. The CSV has all of them.{% endif %}</p>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>Receipt fingerprint</th><th>Counted for</th></tr></thead>
+    <tbody>{% for b in board %}<tr><td class="mono">{{ b.hash }}</td><td>{{ b.candidate }}</td></tr>{% endfor %}</tbody>
+  </table>
+  </div>
+</div>
+{% endblock %}

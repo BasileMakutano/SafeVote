@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>{% block title %}SafeVote{% endblock %} | SafeVote</title>
+<style nonce="{{ csp_nonce }}">{{ inline_css }}</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap bar">
+    <a class="brand" href="{{ url_for(home_endpoint) }}"><span class="mark" aria-hidden="true"></span>SafeVote{% if area_label %}<span class="area">{{ area_label }}</span>{% endif %}</a>
+    <nav aria-label="Main">
+      {% if area == "vote" %}
+        {% if current_user %}
+          <a href="{{ url_for('vote.index') }}">Elections</a>
+          <a href="{{ url_for('results.index') }}">Results</a>
+          <form method="post" action="{{ url_for('vote.logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">Sign out</button></form>
+        {% else %}
+          <a href="{{ url_for('vote.login') }}">Sign in</a>
+          <a href="{{ url_for('vote.register') }}">Register</a>
+        {% endif %}
+      {% elif area == "admin" and current_user %}
+        <a href="{{ url_for('admin.index') }}">Elections</a>
+        <a href="{{ url_for('admin.roll') }}">Voter roll</a>
+        <a href="{{ url_for('admin.audit_log') }}">Audit log</a>
+        <form method="post" action="{{ url_for('admin.logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">Sign out</button></form>
+      {% elif area == "results" %}
+        <a href="{{ url_for('results.index') }}">Results</a>
+        <a href="{{ url_for('results.verify') }}">Check a receipt</a>
+        <a href="{{ url_for('vote.index') }}">Vote</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+<main>
+  <div class="wrap">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}<div class="flash {{ category }}" role="{{ 'alert' if category == 'error' else 'status' }}">{{ message }}</div>{% endfor %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </div>
+</main>
+<footer><div class="wrap"><span>SafeVote: secret ballots you can verify.</span><span>No scripts. No trackers.</span></div></footer>
+</body>
+</html>

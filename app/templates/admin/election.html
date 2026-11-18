@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% from "_forms.html" import csrf, field, area %}
+{% block title %}{{ e.title }}{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>{{ e.title }}</h1>
+  <p><span class="badge {{ state }}">{{ state }}</span> <span class="muted small">{{ e.opens_at|localdt }} to {{ e.closes_at|localdt }}</span></p>
+  {% if e.description %}<p>{{ e.description }}</p>{% endif %}
+  {% if state != "draft" %}
+  <div class="stats flush-top">
+    <div class="stat"><b>{{ ballots }}</b>ballots cast</div>
+    <div class="stat"><b>{{ registered }}</b>registered voters</div>
+  </div>
+  <p class="muted small mt">Per-candidate counts stay hidden until you publish the results.</p>
+  {% endif %}
+  <div class="actions">
+    {% if state == "draft" %}
+    <form method="post" action="{{ url_for('admin.launch', eid=e.id) }}">{{ csrf() }}<button class="btn" type="submit">Launch election</button></form>
+    {% elif state == "open" %}
+    <form method="post" action="{{ url_for('admin.close', eid=e.id) }}">{{ csrf() }}<button class="btn danger" type="submit">Close voting now</button></form>
+    {% elif state == "closed" and not e.results_published %}
+    <form method="post" action="{{ url_for('admin.publish', eid=e.id) }}">{{ csrf() }}<button class="btn" type="submit">Publish results</button></form>
+    {% elif e.results_published %}
+    <a class="btn secondary" href="{{ url_for('results.election', eid=e.id) }}">View public results</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card">
+  <h2>Candidates</h2>
+  {% if candidates %}
+  <ul class="list">
+    {% for c in candidates %}
+    <li>
+      <div><strong>{{ c.name }}</strong>{% if c.manifesto %}<div class="muted small">{{ c.manifesto }}</div>{% endif %}</div>
+      {% if state == "draft" %}
+      <form method="post" action="{{ url_for('admin.delete_candidate', eid=e.id, cid=c.id) }}">{{ csrf() }}<button class="btn secondary" type="submit">Remove</button></form>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}<p class="muted">No candidates yet. Add at least two.</p>{% endif %}
+</div>
+
+{% if state == "draft" %}
+<div class="card">
+  <h2>Add a candidate</h2>
+  <form method="post" action="{{ url_for('admin.add_candidate', eid=e.id) }}">
+    {{ csrf() }}
+    {{ field("name", "Name", required=true, minlength=2, maxlength=80) }}
+    {{ area("manifesto", "Manifesto", hint="Optional. Up to 500 characters.", maxlength=500) }}
+    <button class="btn" type="submit">Add candidate</button>
+  </form>
+</div>
+{% endif %}
+{% endblock %}

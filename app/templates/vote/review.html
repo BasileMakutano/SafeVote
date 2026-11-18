@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% from "_forms.html" import csrf %}
+{% block title %}Confirm your vote{% endblock %}
+{% block content %}
+<div class="card narrow">
+  <h1>Confirm your vote</h1>
+  <p class="muted">{{ e.title }}</p>
+  <div class="choice chosen">
+    <span><strong>{{ candidate.name }}</strong>{% if candidate.manifesto %}<span class="muted">{{ candidate.manifesto }}</span>{% endif %}</span>
+  </div>
+  <p class="mt">Once you confirm, your vote cannot be changed.</p>
+  <div class="actions">
+    <form method="post" action="{{ url_for('vote.cast', eid=e.id) }}">
+      {{ csrf() }}
+      <input type="hidden" name="candidate_id" value="{{ candidate.id }}">
+      <button class="btn" type="submit">Cast my vote</button>
+    </form>
+    <a class="btn secondary" href="{{ url_for('vote.election', eid=e.id) }}">Change my choice</a>
+  </div>
+</div>
+{% endblock %}

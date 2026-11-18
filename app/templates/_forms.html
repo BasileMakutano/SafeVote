@@ -1,0 +1,23 @@
+{% macro csrf() %}<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">{% endmacro %}
+
+{% macro field(name, label, type="text", value="", error=None, hint=None) -%}
+<div class="field{% if error %} has-error{% endif %}">
+  <label for="{{ name }}">{{ label }}</label>
+  <input id="{{ name }}" name="{{ name }}" type="{{ type }}"{% if type != "password" and value %} value="{{ value }}"{% endif %}
+  {%- for k, v in kwargs.items() %} {{ k }}{% if v is not sameas true %}="{{ v }}"{% endif %}{% endfor %}
+  {%- if error %} aria-invalid="true" aria-describedby="{{ name }}-msg"{% endif %}>
+  {% if hint and not error %}<p class="hint">{{ hint }}</p>{% endif %}
+  {% if error %}<p class="err" id="{{ name }}-msg">{{ error }}</p>{% endif %}
+</div>
+{%- endmacro %}
+
+{% macro area(name, label, value="", error=None, hint=None) -%}
+<div class="field{% if error %} has-error{% endif %}">
+  <label for="{{ name }}">{{ label }}</label>
+  <textarea id="{{ name }}" name="{{ name }}"
+  {%- for k, v in kwargs.items() %} {{ k }}{% if v is not sameas true %}="{{ v }}"{% endif %}{% endfor %}
+  {%- if error %} aria-invalid="true" aria-describedby="{{ name }}-msg"{% endif %}>{{ value }}</textarea>
+  {% if hint and not error %}<p class="hint">{{ hint }}</p>{% endif %}
+  {% if error %}<p class="err" id="{{ name }}-msg">{{ error }}</p>{% endif %}
+</div>
+{%- endmacro %}

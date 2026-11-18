@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="card narrow">
+  <h1>{{ title }}</h1>
+  <p>{{ message }}</p>
+  <p class="muted small">Error {{ code }}</p>
+  <a class="btn secondary" href="{{ url_for(home_endpoint) }}">Go to the start page</a>
+</div>
+{% endblock %}

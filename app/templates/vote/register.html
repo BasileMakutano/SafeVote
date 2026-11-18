@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% from "_forms.html" import csrf, field %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div class="card narrow">
+  <h1>Register to vote</h1>
+  <p class="muted">Your student ID must be on the election office roll. Each ID can be registered once.</p>
+  <form method="post">
+    {{ csrf() }}
+    {{ field("student_id", "Student ID", value=form.get("student_id", ""), error=errors.get("student_id"), required=true, minlength=4, maxlength=20, pattern="[A-Za-z0-9\\-]{4,20}", title="4 to 20 letters, digits or hyphens", autocomplete="off") }}
+    {{ field("email", "Email", type="email", value=form.get("email", ""), error=errors.get("email"), required=true, maxlength=254, autocomplete="email") }}
+    {{ field("password", "Password", type="password", error=errors.get("password"), hint="At least 10 characters, with a letter and a number.", required=true, minlength=10, maxlength=128, pattern="(?=.*[A-Za-z])(?=.*[0-9]).{10,128}", title="At least 10 characters, with a letter and a number", autocomplete="new-password") }}
+    {{ field("confirm", "Confirm password", type="password", error=errors.get("confirm"), required=true, minlength=10, maxlength=128, autocomplete="new-password") }}
+    <button class="btn" type="submit">Create account</button>
+  </form>
+  <p class="muted small mt">Already registered? <a href="{{ url_for('vote.login') }}">Sign in</a>.</p>
+</div>
+{% endblock %}

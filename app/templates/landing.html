@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <h1>Your vote stays secret. Your ballot stays provable.</h1>
+  <p>SafeVote runs student elections where nobody can vote twice, nobody can see how you voted, and everybody can check that their ballot was counted.</p>
+  <div class="actions">
+    <a class="btn" href="{{ url_for('vote.login') }}">Vote</a>
+    <a class="btn secondary" href="{{ url_for('results.index') }}">See results</a>
+  </div>
+</section>
+<div class="grid">
+  <div class="card"><h3>One person, one vote</h3><p>Only students on the official roll can register, and the database itself rejects a second ballot from the same account.</p></div>
+  <div class="card"><h3>Secret ballot</h3><p>Who voted and what was voted live in separate tables. A ballot has no name, no timestamp and no link back to you.</p></div>
+  <div class="card"><h3>Check your receipt</h3><p>After voting you get a receipt code. Once results are published, you can confirm your ballot is in the final count.</p></div>
+</div>
+{% endblock %}

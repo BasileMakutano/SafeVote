@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Audit log{% endblock %}
+{% block content %}
+<h1>Audit log</h1>
+{% if chain_ok %}
+<p class="check">The log's hash chain is intact. No entry has been altered or removed from the middle.</p>
+{% else %}
+<p class="check bad"><strong>The hash chain is broken at entry {{ bad_id }}.</strong> The log has been tampered with.</p>
+{% endif %}
+<p class="muted small">Votes record who voted and when, never whom they voted for. Showing the latest 200 entries.</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>Time (UTC)</th><th>Actor</th><th>Action</th><th>Detail</th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+  <tr><td>{{ r.ts }}</td><td>{{ r.email or "none" }}</td><td>{{ r.action }}</td><td>{{ r.detail }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}
