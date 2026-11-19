@@ -59,9 +59,14 @@ def create_app(test_config=None):
 
     cli.register(app)
 
+    def _nonce():
+        if "csp_nonce" not in g:
+            g.csp_nonce = secrets.token_urlsafe(16)
+        return g.csp_nonce
+
     @app.before_request
     def _prepare():
-        g.csp_nonce = secrets.token_urlsafe(16)
+        _nonce()
         load_user()
 
     @app.context_processor
@@ -69,7 +74,7 @@ def create_app(test_config=None):
         area = request.blueprint or ""
         home = f"{area}.index" if area in AREA_LABELS else "landing.index"
         return {
-            "csp_nonce": g.get("csp_nonce", ""),
+            "csp_nonce": _nonce(),
             "inline_css": inline_css,
             "current_user": g.get("user"),
             "area": area,
@@ -84,7 +89,7 @@ def create_app(test_config=None):
 
     @app.after_request
     def _headers(resp):
-        nonce = g.get("csp_nonce", "")
+        nonce = _nonce()
         resp.headers["Content-Security-Policy"] = (
             "default-src 'none'; "
             f"style-src 'nonce-{nonce}'; "
@@ -93,7 +98,7 @@ def create_app(test_config=None):
         )
         resp.headers["X-Content-Type-Options"] = "nosniff"
         resp.headers["X-Frame-Options"] = "DENY"
-        resp.headers["Referrer-Policy"] = "no-referrer"
+        resp.headers["Referrer-Policy"] = "same-origin"
         resp.headers["Permissions-Policy"] = "geolocation=(), camera=(), microphone=()"
         resp.headers["Cross-Origin-Opener-Policy"] = "same-origin"
         resp.headers["Cache-Control"] = "no-store"
@@ -105,7 +110,8 @@ def create_app(test_config=None):
         return render_template("error.html", code=code, title=title, message=message), code
 
     @app.errorhandler(CSRFError)
-    def _csrf(_e):
+    def _csrf(e):
+        app.logger.warning("CSRF rejected on %s: %s", request.host, e.description)
         return _error(400, "Form expired", "Your form expired or was invalid. Go back, reload the page and try again.")
 
     @app.errorhandler(403)
